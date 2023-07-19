@@ -1,0 +1,65 @@
+1.     First of all, go to the AWS portal, and create a new instance. As
+·       Name: jenkins-server
+·       AMI: ubuntu.
+·       Instance type: t2.micro (free tier).
+·       Key pair login: Create > docker.pem.
+·       Allow HTTP.
+·       Allow HTTPS.
+·       (Download the .pem file.)
+·       Click on Launch Instance.
+
+2.    Now, we will allow ports 8080 and 8001 for this machine from a security group. We can find the security group in the VM description. Now, here we need to allow “Inbound Rule”
+
+3.     Now, connect to the EC2 instance that you have created. Copy the SSH from server
+
+4.     Go to the download folder, where the .pem file is placed and open the terminal in the same location, and paste the SSH.
+
+5.     Install Jenkins/Docker if not already installed. 
+
+6.     Goto Jenkins Dashboard and Click on “New Item”
+·       Name: declarative_pipeline
+·       Select: Pipeline
+      Description: This is a demo pipeline project.
+
+7.    Pipeline Script:
+              pipeline{
+                            agent any
+                            stages{
+                                           stage{
+                                                          steps{
+               git branch: 'main', url: 'https://github.com/chxtan/react_django_demo_app.git'
+                                                          }
+                                           }
+                                           stage{
+                                                          steps{
+                                                                        echo "Testing"
+                                                          }
+                                           }
+                                           stage{
+                                                          steps{
+                                                                        script{
+                                                         sh "docker build --no-cache -t react_django_demo_app ."
+                                                                        }
+                                                          }
+                                           }
+                                           stage{
+                                                          steps{
+                                                                        script{
+                                                         sh "docker run -p 8001:8001 -d react_django_demo_app"
+                                                                        }
+                                                          }
+                                           }
+                            }
+}
+
+
+
+8.     Click on “Save”
+9.     Click on “Build Now”.
+
+10.    We can click on “Stage View” to check the results if it is still under process.
+11.    Once it will be completed, It will return as “Success”.
+
+12.    Now, Search for the Public IP with port 8001 in the browser, we have built the image of a web app source code, and deployed that image as a container using Jenkins Pipelines.
+
+
